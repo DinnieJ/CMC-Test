@@ -1,0 +1,16 @@
+{
+    "name": "datnn/test",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Datnn\\": "./"
+        }
+    },
+    "authors": [
+        {
+            "name": "DinnieJ",
+            "email": "nguoikoquen2@gmail.com"
+        }
+    ],
+    "require": {}
+}
