@@ -20,10 +20,14 @@ git clone https://github.com/DinnieJ/CMC-Test
 
 cd CMC-Test
 
+# Copy the .env.example to .env (replace the values with your own)
+cp .env.example .env
+
 # Get the composer vendor and autoload file
 composer i
 
 # Serve the application
+
 php -S 127.0.0.1:8081 -t /public
 ```
 
