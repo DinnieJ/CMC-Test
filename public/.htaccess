@@ -1,0 +1,8 @@
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ - [R=404,L]
+RewriteRule ^(.*)$ /index.php?path=$1 [NC,L,QSA]
+
+ErrorDocument 404 /error/404.php
