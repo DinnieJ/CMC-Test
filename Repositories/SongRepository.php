@@ -10,11 +10,4 @@ class SongRepository extends BaseRepository
     {
         return 'song';
     }
-
-    public function create($data) {}
-
-    public function delete($id) {}
-
-    public function update($data, $id) {}
-
 }

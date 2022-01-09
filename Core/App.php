@@ -27,7 +27,7 @@ class App
         $c = include_once __DIR__ . "/.." . $_SERVER['PATH_INFO'] . "/index.php";
 
         if (!$c) {
-            echo JsonResponse::get_response(404, "Route not found");
+            echo JsonResponse::getResponse(404, "Route not found");
         }
     }
 }

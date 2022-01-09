@@ -1,6 +1,8 @@
 <?php
 
 namespace Datnn\Validator;
+
+use Datnn\Core\Validator\Validator;
 use Datnn\Core\JsonResponse;
 
 class UpdateMovieValidator extends Validator
@@ -19,6 +21,6 @@ class UpdateMovieValidator extends Validator
 
     protected function responsesError()
     {
-        echo JsonResponse::get_response(422, "Invalid data");
+        echo JsonResponse::getResponse(422, "Invalid data");
     }
 }

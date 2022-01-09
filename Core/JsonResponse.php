@@ -3,7 +3,7 @@ namespace Datnn\Core;
 
 trait JsonResponse {
 
-    public static function get_response($code = 200, $message = "", $data = [])
+    public static function getResponse($code = 200, $message = "", $data = [])
     {
 
         header('Content-Type: application/json');
@@ -12,7 +12,8 @@ trait JsonResponse {
             200 => '200 OK',
             400 => '400 Bad Request',
             404 => '404 Not Found',
-            422 => 'Unprocessable Entity',
+            405 => '405 Method Not Allowed',
+            422 => '422 Unprocessable Entity',
             500 => '500 Internal Server Error'
         );
 

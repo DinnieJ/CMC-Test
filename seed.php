@@ -17,8 +17,6 @@ $statement =
   `year` varchar(4) NOT NULL,
   `director_name` varchar(100) NOT NULL,
   `release_date` datetime NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -29,8 +27,6 @@ CREATE TABLE IF NOT EXISTS `song` (
     `year` varchar(4) NOT NULL,
     `artist_name` varchar(100) NOT NULL,
     `release_date` datetime NOT NULL,
-    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

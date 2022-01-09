@@ -1,8 +1,8 @@
 <?php
 
-namespace Datnn\Validator;
+namespace Datnn\Core\Validator;
 
-abstract class Validator
+abstract class Validator implements IValidatorRules
 {
     private $data;
 
@@ -38,18 +38,23 @@ abstract class Validator
         return true;
     }
 
-    protected function number($val, $params)
+    public function number($val)
     {
         if(!$val) return true;
         return is_numeric($val);
     }
 
-    protected function required($val)
+    public function length($val, $params) {
+        if(!$val) return true;
+        return strlen($val) == $params[0];
+    }
+
+    public function required($val)
     {
         return isset($val) && !empty($val) && !is_null($val);
     }
 
-    protected function max($val, $max_val)
+    public function max($val, $max_val)
     {
         if(!$val) return true;
         if (is_numeric($val)) {
@@ -59,7 +64,7 @@ abstract class Validator
         }
     }
 
-    protected function min($val, $min_val)
+    public function min($val, $min_val)
     {
         if(!$val) return true;
         if (is_numeric($val)) {
@@ -69,7 +74,7 @@ abstract class Validator
         }
     }
 
-    protected function datetimesql($val)
+    public function datetimesql($val)
     {
         if(!$val) return true;
         return preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|^\d{4}-\d{2}-\d{2}$/', $val);

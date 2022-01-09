@@ -4,12 +4,14 @@ namespace Datnn\Repositories;
 
 use Datnn\Database\MysqlConnector;
 
-abstract class BaseRepository {
+abstract class BaseRepository
+{
     protected $connector;
 
     protected $tableName;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->connector = new MysqlConnector();
         $this->tableName = $this->getTableName();
     }
@@ -17,9 +19,10 @@ abstract class BaseRepository {
 
     abstract function getTableName();
 
-    public function getAllPagination($page, $limit = 5) {
+    public function getAllPagination($page, $limit = 5)
+    {
 
-        $starting_limit = ($page-1)*$limit;
+        $starting_limit = ($page - 1) * $limit;
 
         $queryAll  = "SELECT * FROM `$this->tableName` LIMIT :starter,:limit_page";
 
@@ -28,9 +31,9 @@ abstract class BaseRepository {
             $stmt->bindParam(':starter', $starting_limit, \PDO::PARAM_INT);
             $stmt->bindParam(':limit_page', $limit, \PDO::PARAM_INT);
             $stmt->execute();
-    
+
             $data = array();
-            while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $data[] = $row;
             }
             return $data;
@@ -39,7 +42,8 @@ abstract class BaseRepository {
         }
     }
 
-    public function get($id) {
+    public function get($id)
+    {
         $query  = "SELECT * FROM `$this->tableName` WHERE `id`= :table_id";
         try {
             $stmt = $this->connector->getConnection()->prepare($query, array(\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY));
@@ -47,23 +51,21 @@ abstract class BaseRepository {
             $stmt->bindParam(':table_id', \intval($id), \PDO::PARAM_INT);
 
             $stmt->execute();
-
-            $data = array();
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 return $row;
             }
-            
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
     }
 
-    public function create($data) {
+    public function create($data)
+    {
         $selected_cols = \array_keys($data);
         $cols = \implode('`,`', $selected_cols);
         $cols = '(`' . $cols . '`)';
 
-        $val_params = \array_map(function($item) {
+        $val_params = \array_map(function ($item) {
             return ':' . $item;
         }, $selected_cols);
 
@@ -72,7 +74,7 @@ abstract class BaseRepository {
 
         $stmt = $this->connector->getConnection()->prepare($query);
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $stmt->bindParam(':' . $key, $value['value'], $value['type']);
         }
 
@@ -83,22 +85,23 @@ abstract class BaseRepository {
             echo $e->getMessage();
         }
     }
-    
-    public function update($data, $id) {
+
+    public function update($data, $id)
+    {
         $selected_cols = \array_keys($data);
         $query = "UPDATE `$this->tableName` SET ";
 
-        $update_col_strings = array_map(function($col){
+        $update_col_strings = array_map(function ($col) {
             return "`$col` = :$col" . " ";
         }, $selected_cols);
 
         $update_col_string = implode(',', $update_col_strings);
         $query .= $update_col_string;
         $query .= " WHERE `id` = :rid";
-        
+
         $stmt = $this->connector->getConnection()->prepare($query);
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $stmt->bindParam(':' . $key, $value['value'], $value['type']);
         }
 
@@ -112,7 +115,8 @@ abstract class BaseRepository {
         }
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $query = "DELETE FROM `$this->tableName` WHERE `id`= :table_id";
         try {
             $stmt = $this->connector->getConnection()->prepare($query);

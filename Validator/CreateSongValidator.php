@@ -1,18 +1,16 @@
 <?php
-
 namespace Datnn\Validator;
 
 use Datnn\Core\JsonResponse;
 use Datnn\Core\Validator\Validator;
 
-class CreateMovieValidator extends Validator {
-
+class CreateSongValidator extends Validator {
     protected function rules() {
         return [
             'title' => 'required|max:150',
-            'description' => 'required|max:300',
+            'album_name' => 'required|max:150',
             'year' => 'required|number|length:4',
-            'director_name' => 'required|max:100',
+            'artist_name' => 'required|max:100',
             'release_date' => 'required|datetimesql'
         ];
     }
