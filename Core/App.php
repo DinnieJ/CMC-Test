@@ -3,12 +3,12 @@
 namespace Datnn\Core;
 
 use Dotenv\Dotenv;
-use Notihnio\RequestParser\RequestParser;
+use Datnn\Core\Router;
 
 
 class App
 {
-    use JsonResponse;
+    // use JsonResponse;
     private $routes;
 
 
@@ -24,10 +24,6 @@ class App
 
     public function run()
     {
-        $c = include_once __DIR__ . "/.." . $_SERVER['PATH_INFO'] . "/index.php";
-
-        if (!$c) {
-            echo JsonResponse::getResponse(404, "Route not found");
-        }
+        Router::load();
     }
 }

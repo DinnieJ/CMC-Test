@@ -22,7 +22,7 @@ class MysqlConnector {
             $this->dbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->dbConnection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            exit($e);
         }
     }
 
