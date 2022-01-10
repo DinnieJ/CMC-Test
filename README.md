@@ -30,7 +30,7 @@ composer i
 php seed.php
 
 # Serve the application
-php -S 127.0.0.1:8081 -t /public
+php -S 127.0.0.1:8081 -t public
 ```
 
 ### Description
