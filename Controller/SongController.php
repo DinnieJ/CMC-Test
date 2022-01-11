@@ -5,6 +5,7 @@ namespace Datnn\Controller;
 use Datnn\Validator\CreateSongValidator;
 use Datnn\Validator\UpdateSongValidator;
 use Datnn\Repositories\SongRepository;
+use Datnn\Core\HttpRequest;
 
 class SongController extends BaseController {
     private $song_repo;
@@ -14,10 +15,10 @@ class SongController extends BaseController {
     }
 
     public function all($request) {
-        $page = $_REQUEST['page'] ?? 1;
-        $per_page = $_REQUEST['per_page'] ?? 5;
+        $page = $request->query['page'] ?? 1;
+        $per_page = $request->query['limit'] ?? 5;
 
-        if (is_numeric($page)) {
+        if (is_numeric($page) && $page > 0 && $per_page > 0) {
             $page = intval($page);
             $per_page = \intval($per_page);
 
@@ -33,9 +34,9 @@ class SongController extends BaseController {
         }
     }
 
-    public function get($request) {
-        if (is_numeric($request['id'])) {
-            $song = $this->song_repo->get($request['id']);
+    public function get(HttpRequest $request) {
+        if (is_numeric($request->params['id'])) {
+            $song = $this->song_repo->get($request->params['id']);
             if ($song) {
                 echo $this->getResponse(200, "", $song);
             } else {
@@ -46,15 +47,15 @@ class SongController extends BaseController {
         }
     }
 
-    public function store($request) {
-        (new CreateSongValidator($_POST))->validate();
+    public function store(HttpRequest $request) {
+        (new CreateSongValidator($request->body))->validate();
 
         $song = $this->song_repo->create([
-            'title' => ['value' => $_POST['title'], 'type' => \PDO::PARAM_STR],
-            'album_name' => ['value' => $_POST['album_name'], 'type' => \PDO::PARAM_STR],
-            'year' => ['value' => $_POST['year'], 'type' => \PDO::PARAM_STR],
-            'artist_name' => ['value' => $_POST['artist_name'], 'type' => \PDO::PARAM_STR],
-            'release_date' => ['value' => $_POST['release_date'], 'type' => \PDO::PARAM_STR],
+            'title' => ['value' => $request->body['title'], 'type' => \PDO::PARAM_STR],
+            'album_name' => ['value' => $request->body['album_name'], 'type' => \PDO::PARAM_STR],
+            'year' => ['value' => $request->body['year'], 'type' => \PDO::PARAM_STR],
+            'artist_name' => ['value' => $request->body['artist_name'], 'type' => \PDO::PARAM_STR],
+            'release_date' => ['value' => $request->body['release_date'], 'type' => \PDO::PARAM_STR],
         ]);
 
         echo $song ?
@@ -62,21 +63,19 @@ class SongController extends BaseController {
             $this->getResponse(400, "Create failed");
     }
 
-    public function update($request) {
-        $data = file_get_contents("php://input");
-        parse_str($data, $post_data);
+    public function update(HttpRequest $request) {
         if (is_numeric($request['id'])) {
-            $song = $this->song_repo->get($request['id']);
+            $song = $this->song_repo->get($request->params['id']);
             if ($song) {
-                (new UpdateSongValidator($post_data))->validate();
+                (new UpdateSongValidator($request->body))->validate();
 
                 $updateSong = $this->song_repo->update([
-                    'title' => ['value' => $post_data['title'] ?? $song['title'], 'type' => \PDO::PARAM_STR],
-                    'album_name' => ['value' => $post_data['album_name'] ?? $song['album_name'], 'type' => \PDO::PARAM_STR],
-                    'year' => ['value' => $post_data['year'] ?? $song['year'], 'type' => \PDO::PARAM_STR],
-                    'artist_name' => ['value' => $post_data['artist_name'] ?? $song['artist_name'], 'type' => \PDO::PARAM_STR],
-                    'release_date' => ['value' => $post_data['release_date'] ?? $song['release_date'], 'type' => \PDO::PARAM_STR],
-                ], $request['id']);
+                    'title' => ['value' => $request->body['title'] ?? $song['title'], 'type' => \PDO::PARAM_STR],
+                    'album_name' => ['value' => $request->body['album_name'] ?? $song['album_name'], 'type' => \PDO::PARAM_STR],
+                    'year' => ['value' => $request->body['year'] ?? $song['year'], 'type' => \PDO::PARAM_STR],
+                    'artist_name' => ['value' => $request->body['artist_name'] ?? $song['artist_name'], 'type' => \PDO::PARAM_STR],
+                    'release_date' => ['value' => $request->body['release_date'] ?? $song['release_date'], 'type' => \PDO::PARAM_STR],
+                ], $request->params['id']);
 
                 echo $updateSong ?
                     $this->getResponse(200, "Update successfully") :
@@ -89,9 +88,9 @@ class SongController extends BaseController {
         }
     }
 
-    public function delete($request) {
-        if (is_numeric($request['id'])) {
-            $delete_song = $this->song_repo->delete($request['id']);
+    public function delete(HttpRequest $request) {
+        if (is_numeric($request->params['id'])) {
+            $delete_song = $this->song_repo->delete($request->params['id']);
             echo $delete_song ? 
                 $this->getResponse(200, "Delete song successfully!") : 
                 $this->getResponse(404, "Song not found");;

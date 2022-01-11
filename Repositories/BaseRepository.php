@@ -38,7 +38,7 @@ abstract class BaseRepository
             }
             return $data;
         } catch (\Exception $e) {
-            echo $e->getMessage();
+             return [];
         }
     }
 
@@ -55,7 +55,7 @@ abstract class BaseRepository
                 return $row;
             }
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            return null;
         }
     }
 
@@ -82,7 +82,7 @@ abstract class BaseRepository
             $stmt->execute();
             return $this->connector->getConnection()->lastInsertId();
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            return 0;
         }
     }
 
@@ -111,7 +111,7 @@ abstract class BaseRepository
             $stmt->execute();
             return $stmt->rowCount();
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            return 0;
         }
     }
 

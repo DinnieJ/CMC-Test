@@ -36,9 +36,6 @@ class Router
             if (preg_match($route, $this->getUri(), $matches)) {
                 foreach ($matches as $key => $match) {
                     if (is_string($key)) {
-                        if ($key === 'controller') {
-                            $match = ucwords($match);
-                        }
                         $params[$key] = $match;
                     }
                 }
@@ -53,7 +50,7 @@ class Router
             echo JsonResponse::getResponse(404, "Method not found");
             die();
         }
-        $controller = $this->getNamespace() . $this->params['controller'];
+        $controller = 'Datnn\\Controller\\' . $this->params['controller'];
         $action = $this->params['action'];
         if (class_exists($controller)) {
             $controller = new $controller;
@@ -68,17 +65,6 @@ class Router
         } else {
             echo JsonResponse::getResponse(404, "Method not found");
         }
-    }
-
-    private function getNamespace()
-    {
-        $namespace = '\\Datnn\\Controller\\';
-
-        if (array_key_exists('namespace', $this->params)) {
-            $namespace .= $this->params['namespace'] . '\\';
-        }
-
-        return $namespace;
     }
 
     private function getUri()

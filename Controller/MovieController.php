@@ -4,6 +4,7 @@ namespace Datnn\Controller;
 use Datnn\Repositories\MovieRepository;
 use Datnn\Validator\CreateMovieValidator;
 use Datnn\Validator\UpdateMovieValidator;
+use Datnn\Core\HttpRequest;
 
 class MovieController extends BaseController {
     private $movie_repo;
@@ -12,11 +13,11 @@ class MovieController extends BaseController {
         $this->movie_repo = new MovieRepository();
     }
 
-    public function all($request) {
+    public function all(HttpRequest $request) {
         $page = $request->query['page'] ?? 1;
         $limit= $request->query['limit'] ?? 5;
 
-        if (is_numeric($page)) {
+        if (is_numeric($page) && $page > 0 && $limit > 0) {
             $page = intval($page);
             $limit = intval($limit);
 
@@ -31,7 +32,7 @@ class MovieController extends BaseController {
             echo $this->getResponse(422, "Invalid page number");
         }
     }
-    public function get($request) {
+    public function get(HttpRequest $request) {
         if (is_numeric($request->params['id'])) {
             $movie = $this->movie_repo->get($request->params['id']);
             if ($movie) {
@@ -44,7 +45,7 @@ class MovieController extends BaseController {
         }
     }
 
-    public function store($request) {
+    public function store(HttpRequest $request) {
         (new CreateMovieValidator($_POST))->validate();
 
         $movie = $this->movie_repo->create([
@@ -60,21 +61,20 @@ class MovieController extends BaseController {
             $this->getResponse(422, "Create failed");
     }
 
-    public function update($request) {
-        $data = file_get_contents("php://input");
-        parse_str($data, $post_data);
+    public function update(HttpRequest $request) {
 
-        (new UpdateMovieValidator($post_data))->validate();
-        if (is_numeric($request['id'])) {
-            $movie = $this->movie_repo->get($request['id']);
+        (new UpdateMovieValidator($request->body))->validate();
+
+        if (is_numeric($request->params['id'])) {
+            $movie = $this->movie_repo->get($request->params['id']);
             if ($movie) {
                 $updateMovie = $this->movie_repo->update([
-                    'title' => ['value' => $post_data['title'] ?? $movie['title'], 'type' => \PDO::PARAM_STR],
-                    'description' => ['value' => $post_data['description'] ?? $movie['description'], 'type' => \PDO::PARAM_STR],
-                    'year' => ['value' => $post_data['year'] ?? $movie['year'], 'type' => \PDO::PARAM_STR],
-                    'director_name' => ['value' => $post_data['director_name'] ?? $movie['director_name'], 'type' => \PDO::PARAM_STR],
-                    'release_date' => ['value' => $post_data['release_date'] ?? $movie['release_date'], 'type' => \PDO::PARAM_STR],
-                ], $request['id']);
+                    'title' => ['value' => $request->body['title'] ?? $movie['title'], 'type' => \PDO::PARAM_STR],
+                    'description' => ['value' => $request->body['description'] ?? $movie['description'], 'type' => \PDO::PARAM_STR],
+                    'year' => ['value' => $request->body['year'] ?? $movie['year'], 'type' => \PDO::PARAM_STR],
+                    'director_name' => ['value' => $request->body['director_name'] ?? $movie['director_name'], 'type' => \PDO::PARAM_STR],
+                    'release_date' => ['value' => $request->body['release_date'] ?? $movie['release_date'], 'type' => \PDO::PARAM_STR],
+                ], $request->params['id']);
 
                 echo $updateMovie ?
                     $this->getResponse(200, "Update successfully") :
@@ -87,10 +87,10 @@ class MovieController extends BaseController {
         }
     }
 
-    public function delete($request) {
-        
-        if (is_numeric($request['id'])) {
-            $delete_movie = $this->movie_repo->delete($request['id']);
+    public function delete(HttpRequest $request) {
+
+        if (is_numeric($request->params['id'])) {
+            $delete_movie = $this->movie_repo->delete($request->params['id']);
             echo $delete_movie ? 
                 $this->getResponse(200, "Delete movie successfully!") : 
                 $this->getResponse(404, "Movie not found");;
