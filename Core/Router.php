@@ -16,7 +16,7 @@ class Router
         $router->redirect();
     }
 
-    public function route(string $route, array $params = []): void
+    public function route(string $route, array $params = [])
     {
         if (isset($params['method']) && $_SERVER['REQUEST_METHOD'] !== $params['method']) {
             return;
@@ -30,7 +30,7 @@ class Router
         $this->routes[$route] = $params;
     }
 
-    public function setParams(): void
+    public function setParams()
     {
         foreach ($this->routes as $route => $params) {
             if (preg_match($route, $this->getUri(), $matches)) {
@@ -47,7 +47,7 @@ class Router
         }
     }
 
-    public function redirect(): void
+    public function redirect()
     {
         if(!isset($this->params['controller']) || !isset($this->params['action'])) {
             echo JsonResponse::getResponse(404, "Method not found");
@@ -57,12 +57,11 @@ class Router
         $action = $this->params['action'];
         if (class_exists($controller)) {
             $controller = new $controller;
-            unset($this->params['controller']);
             if (is_callable([$controller, $action])) {
-                
+                unset($this->params['controller']);
                 unset($this->params['action']);
                 unset($this->params['namespace']);
-                call_user_func_array([$controller, $action], [$this->params]);
+                call_user_func_array([$controller, $action], [new HttpRequest($this->params)]);
             } else {
                 echo JsonResponse::getResponse(404, "Method not found");
             }
@@ -71,7 +70,7 @@ class Router
         }
     }
 
-    private function getNamespace(): string
+    private function getNamespace()
     {
         $namespace = '\\Datnn\\Controller\\';
 
@@ -82,7 +81,7 @@ class Router
         return $namespace;
     }
 
-    private function getUri(): string
+    private function getUri()
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $uri = explode('/', $uri);

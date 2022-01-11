@@ -13,17 +13,18 @@ class MovieController extends BaseController {
     }
 
     public function all($request) {
-        $page = $_REQUEST['page'] ?? 1;
+        $page = $request->query['page'] ?? 1;
+        $limit= $request->query['limit'] ?? 5;
 
         if (is_numeric($page)) {
             $page = intval($page);
-            $per_page = 5;
+            $limit = intval($limit);
 
-            $movies = $this->movie_repo->getAllPagination($page);
+            $movies = $this->movie_repo->getAllPagination($page, $limit);
 
             echo $this->getResponse(200, "", array(
                 'current_page' => intval($page),
-                'per_page' => $per_page,
+                'per_page' => $limit,
                 'result' => $movies
             ));
         } else {
@@ -31,8 +32,8 @@ class MovieController extends BaseController {
         }
     }
     public function get($request) {
-        if (is_numeric($request['id'])) {
-            $movie = $this->movie_repo->get($request['id']);
+        if (is_numeric($request->params['id'])) {
+            $movie = $this->movie_repo->get($request->params['id']);
             if ($movie) {
                 echo $this->getResponse(200, "", $movie);
             } else {
